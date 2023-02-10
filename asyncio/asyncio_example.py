@@ -47,6 +47,9 @@ async def publish(queue):
 async def consume(queue):
     while True:
         msg = await queue.get()
+
+        # if random.randrange(1, 5) == 3:
+        #     raise Exception(f"Could not consume {msg}")    
         logging.info(f"Consumed {msg}")
 
         asyncio.create_task(handle_message(msg))
@@ -57,7 +60,10 @@ async def handle_message(msg):
     asyncio.create_task(extend(msg, event))
     asyncio.create_task(cleanup(msg, event))
 
-    await asyncio.gather(restart_host(msg), save(msg))
+    results = await asyncio.gather(
+        save(msg), restart_host(msg), return_exceptions=True
+    )
+    handle_results(results, msg)
     event.set()
 
 async def cleanup(msg, event):
@@ -71,6 +77,9 @@ async def cleanup(msg, event):
 async def restart_host(msg):
     # unhelpful simulation of i/o work
     await asyncio.sleep(random.random())
+    # totally realistic exception
+    if random.randrange(1, 5) == 3:
+        raise RestartFailed(f"Could not restart {msg.hostname}")
     msg.restarted = True
     logging.info(f"Restarted {msg.hostname}")
 
@@ -85,13 +94,17 @@ async def extend(msg, event):
 async def save(msg):
     # unhelpful simulation of i/o work
     await asyncio.sleep(random.random())
+    # totally realistic exception
+    if random.randrange(1, 5) == 3:
+        raise Exception(f"Could not restart {msg.hostname}")
     msg.saved = True
     logging.info(f"Saved {msg} into database")
 
 
-async def shutdown(signal, loop):
+async def shutdown(loop, signal=None):
     """Cleanup tasks tied to the service's shutdown."""
-    logging.info(f"Received exit signal {signal.name}...")
+    if signal:
+        logging.info(f"Received exit signal {signal.name}...")
     logging.info("Closing database connections")
     logging.info("Nacking outstanding messages")
     tasks = [t for t in asyncio.all_tasks() if t is not
@@ -104,6 +117,19 @@ async def shutdown(signal, loop):
     logging.info(f"Flushing metrics")
     loop.stop()
 
+def handle_exception(loop, context):
+    # context["message"] will always be there; but context["exception"] may not
+    msg = context.get("exception", context["message"])
+    logging.error(f"Caught exception: {msg}")
+    logging.info("Shutting down...")
+    asyncio.create_task(shutdown(loop))
+
+def handle_results(results, msg):
+    for result in results:
+        if isinstance(result, RestartFailed):
+            logging.error(f"Retrying for failure to restart: {msg.hostname}")
+        elif isinstance(result, Exception):
+            logging.error(f"Handling general error: {result}")
 
 def main():
     loop = asyncio.get_event_loop()
@@ -111,7 +137,8 @@ def main():
     signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
     for s in signals:
         loop.add_signal_handler(
-            s, lambda s=s: asyncio.create_task(shutdown(s, loop)))
+            s, lambda s=s: asyncio.create_task(shutdown(loop, s)))
+    loop.set_exception_handler(handle_exception)
     queue = asyncio.Queue()
 
     try:
@@ -121,6 +148,9 @@ def main():
     finally:
         loop.close()
         logging.info("Successfully shutdown the Mayhem service.")
+
+class RestartFailed(Exception):
+    pass
 
 
 if __name__ == '__main__':
