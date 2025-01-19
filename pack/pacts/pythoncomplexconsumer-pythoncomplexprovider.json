@@ -1,0 +1,82 @@
+{
+  "consumer": {
+    "name": "PythonComplexConsumer"
+  },
+  "provider": {
+    "name": "PythonComplexProvider"
+  },
+  "interactions": [
+    {
+      "description": "a request to list items",
+      "providerState": "There are some items in the provider",
+      "request": {
+        "method": "GET",
+        "path": "/items"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": [
+          {
+            "id": "item-1234",
+            "name": "Widget A"
+          }
+        ],
+        "matchingRules": {
+          "$.body[0].id": {
+            "match": "type"
+          },
+          "$.body[0].name": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to checkout item item-1234",
+      "providerState": "Item item-1234 is available to checkout",
+      "request": {
+        "method": "POST",
+        "path": "/items/item-1234/checkout",
+        "body": {
+          "serviceRunId": "run-9999"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "checkoutId": "checkout-5678"
+        },
+        "matchingRules": {
+          "$.body.checkoutId": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to release an item with a given checkout ID",
+      "providerState": "Item item-1234 is currently checked out with id checkout-5678",
+      "request": {
+        "method": "POST",
+        "path": "/items/item-1234/release/checkout-5678"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "status": "released"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}

@@ -1,0 +1,164 @@
+I, [2025-01-19T13:53:04.482419 #75511]  INFO -- : Cleared interactions
+I, [2025-01-19T13:53:04.484309 #75511]  INFO -- : Registered expected interaction GET /items
+D, [2025-01-19T13:53:04.484371 #75511] DEBUG -- : {
+  "description": "a request to list items",
+  "providerState": "There are some items in the provider",
+  "request": {
+    "method": "GET",
+    "path": "/items"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+    },
+    "body": [
+      {
+        "id": {
+          "json_class": "Pact::SomethingLike",
+          "contents": "item-1234"
+        },
+        "name": {
+          "json_class": "Pact::SomethingLike",
+          "contents": "Widget A"
+        }
+      }
+    ]
+  },
+  "metadata": null
+}
+I, [2025-01-19T13:53:04.485336 #75511]  INFO -- : Received request GET /items
+D, [2025-01-19T13:53:04.485368 #75511] DEBUG -- : {
+  "path": "/items",
+  "query": "",
+  "method": "get",
+  "headers": {
+    "Host": "localhost:1234",
+    "User-Agent": "python-requests/2.32.3",
+    "Accept-Encoding": "gzip, deflate",
+    "Accept": "*/*",
+    "Connection": "keep-alive",
+    "Version": "HTTP/1.1"
+  }
+}
+I, [2025-01-19T13:53:04.485437 #75511]  INFO -- : Found matching response for GET /items
+D, [2025-01-19T13:53:04.485455 #75511] DEBUG -- : {
+  "status": 200,
+  "headers": {
+  },
+  "body": [
+    {
+      "id": {
+        "json_class": "Pact::SomethingLike",
+        "contents": "item-1234"
+      },
+      "name": {
+        "json_class": "Pact::SomethingLike",
+        "contents": "Widget A"
+      }
+    }
+  ]
+}
+I, [2025-01-19T13:53:04.486228 #75511]  INFO -- : Verifying - interactions matched
+I, [2025-01-19T13:53:04.487141 #75511]  INFO -- : Writing pact for PythonComplexProvider to ./pacts/pythoncomplexconsumer-pythoncomplexprovider.json
+I, [2025-01-19T13:53:04.488959 #75511]  INFO -- : Cleared interactions
+I, [2025-01-19T13:53:04.489813 #75511]  INFO -- : Registered expected interaction POST /items/item-1234/checkout
+D, [2025-01-19T13:53:04.489833 #75511] DEBUG -- : {
+  "description": "a request to checkout item item-1234",
+  "providerState": "Item item-1234 is available to checkout",
+  "request": {
+    "method": "POST",
+    "path": "/items/item-1234/checkout",
+    "body": {
+      "serviceRunId": "run-9999"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+    },
+    "body": {
+      "checkoutId": {
+        "json_class": "Pact::SomethingLike",
+        "contents": "checkout-5678"
+      }
+    }
+  },
+  "metadata": null
+}
+I, [2025-01-19T13:53:04.490834 #75511]  INFO -- : Received request POST /items/item-1234/checkout
+D, [2025-01-19T13:53:04.490855 #75511] DEBUG -- : {
+  "path": "/items/item-1234/checkout",
+  "query": "",
+  "method": "post",
+  "body": {
+    "serviceRunId": "run-9999"
+  },
+  "headers": {
+    "Content-Length": "28",
+    "Content-Type": "application/json",
+    "Host": "localhost:1234",
+    "User-Agent": "python-requests/2.32.3",
+    "Accept-Encoding": "gzip, deflate",
+    "Accept": "*/*",
+    "Connection": "keep-alive",
+    "Version": "HTTP/1.1"
+  }
+}
+I, [2025-01-19T13:53:04.490962 #75511]  INFO -- : Found matching response for POST /items/item-1234/checkout
+D, [2025-01-19T13:53:04.490976 #75511] DEBUG -- : {
+  "status": 200,
+  "headers": {
+  },
+  "body": {
+    "checkoutId": {
+      "json_class": "Pact::SomethingLike",
+      "contents": "checkout-5678"
+    }
+  }
+}
+I, [2025-01-19T13:53:04.491699 #75511]  INFO -- : Verifying - interactions matched
+I, [2025-01-19T13:53:04.492437 #75511]  INFO -- : Writing pact for PythonComplexProvider to ./pacts/pythoncomplexconsumer-pythoncomplexprovider.json
+I, [2025-01-19T13:53:04.493841 #75511]  INFO -- : Cleared interactions
+I, [2025-01-19T13:53:04.494971 #75511]  INFO -- : Registered expected interaction POST /items/item-1234/release/checkout-5678
+D, [2025-01-19T13:53:04.495006 #75511] DEBUG -- : {
+  "description": "a request to release an item with a given checkout ID",
+  "providerState": "Item item-1234 is currently checked out with id checkout-5678",
+  "request": {
+    "method": "POST",
+    "path": "/items/item-1234/release/checkout-5678"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+    },
+    "body": {
+      "status": "released"
+    }
+  },
+  "metadata": null
+}
+I, [2025-01-19T13:53:04.495818 #75511]  INFO -- : Received request POST /items/item-1234/release/checkout-5678
+D, [2025-01-19T13:53:04.495840 #75511] DEBUG -- : {
+  "path": "/items/item-1234/release/checkout-5678",
+  "query": "",
+  "method": "post",
+  "headers": {
+    "Host": "localhost:1234",
+    "User-Agent": "python-requests/2.32.3",
+    "Accept-Encoding": "gzip, deflate",
+    "Accept": "*/*",
+    "Connection": "keep-alive",
+    "Version": "HTTP/1.1"
+  }
+}
+I, [2025-01-19T13:53:04.495872 #75511]  INFO -- : Found matching response for POST /items/item-1234/release/checkout-5678
+D, [2025-01-19T13:53:04.495888 #75511] DEBUG -- : {
+  "status": 200,
+  "headers": {
+  },
+  "body": {
+    "status": "released"
+  }
+}
+I, [2025-01-19T13:53:04.496617 #75511]  INFO -- : Verifying - interactions matched
+I, [2025-01-19T13:53:04.497406 #75511]  INFO -- : Writing pact for PythonComplexProvider to ./pacts/pythoncomplexconsumer-pythoncomplexprovider.json
